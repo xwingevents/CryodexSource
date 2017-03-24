@@ -28,6 +28,10 @@ import cryodex.modules.xwing.XWingTournament;
 import cryodex.widget.ComponentUtils;
 import cryodex.xml.XMLUtils;
 import cryodex.xml.XMLUtils.Element;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URLConnection;
 
 public class CryodexController {
 
@@ -83,8 +87,9 @@ public class CryodexController {
     private static String SAVE_FILENAME = null;
     private static String SAVE_PATH = null;
 
-    private static List<Tournament> tournaments = new ArrayList<Tournament>();
-    private static List<Player> players = new ArrayList<Player>();
+    private static final List<Tournament> tournaments = new ArrayList<>();
+    private static List<Player> players = new ArrayList<>();
+    private static List<DestinyPlayer> destinyPlayers = new ArrayList<>();
     private static List<Module> modules;
 
     private static CryodexOptions options;
@@ -93,7 +98,7 @@ public class CryodexController {
 
     public static List<Module> getModules() {
         if (modules == null) {
-            modules = new ArrayList<Module>();
+            modules = new ArrayList<>();
 
             for (Modules m : Modules.values()) {
                 modules.add(m.getModule());
@@ -112,9 +117,16 @@ public class CryodexController {
 
     public static List<Player> getPlayers() {
         if (players == null) {
-            players = new ArrayList<Player>();
+            players = new ArrayList<>();
         }
         return players;
+    }
+
+    public static List<DestinyPlayer> getDestinyPlayers() {
+        if (destinyPlayers == null) {
+            destinyPlayers = new ArrayList<>();
+        }
+        return destinyPlayers;
     }
 
     public static Player getPlayerByID(String id) {
@@ -471,7 +483,97 @@ public class CryodexController {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    public static void downloadDestinyPlayers() throws MalformedURLException, IOException {
+        
+        final int BUFFER_SIZE = 4096;
 
+        String fileURL = "http://www.destinyccg.com/dpc/destinyplayers.csv";
+        String saveDir = System.getProperty("user.dir");
+        
+        URL url = new URL(fileURL);
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.29 Safari/537.36");
+        
+        HttpURLConnection httpConn = (HttpURLConnection) urlConnection;
+        int responseCode = httpConn.getResponseCode();
+ 
+        // always check HTTP response code first
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            String fileName = "destinyplayers.csv";
+            //String disposition = httpConn.getHeaderField("Content-Disposition");
+            //String contentType = httpConn.getContentType();
+            //int contentLength = httpConn.getContentLength();
+ 
+            /*
+            if (disposition != null) {
+                // extracts file name from header field
+                int index = disposition.indexOf("filename=");
+                if (index > 0) {
+                    fileName = disposition.substring(index + 10,
+                            disposition.length() - 1);
+                }
+            } else {
+                // extracts file name from URL
+                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
+                        fileURL.length());
+            }
+            */
+            
+            //System.out.println("Content-Type = " + contentType);
+            //System.out.println("Content-Disposition = " + disposition);
+            //System.out.println("Content-Length = " + contentLength);
+            //System.out.println("fileName = " + fileName);
+ 
+            // opens input stream from the HTTP connection
+            InputStream inputStream = httpConn.getInputStream();
+            String saveFilePath = saveDir + File.separator + fileName;
+             
+            // opens an output stream to save into file
+            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+ 
+            int bytesRead = -1;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+ 
+            outputStream.close();
+            inputStream.close();
+ 
+            JOptionPane.showMessageDialog((Component) null,
+                "You may view it by going to 'File | View Destiny players'",
+                "Download complete.", JOptionPane.INFORMATION_MESSAGE);
+            
+            // process the file and add DestinyPlayers to the main array
+            
+        } else {
+            //System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+            JOptionPane.showMessageDialog((Component) null,
+                responseCode, "Error.", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        httpConn.disconnect();
+     
+        /*
+        URL url = new URL("http://www.destinyccg.com/dpc/destinyplayers.csv");
+  
+            
+        JOptionPane.showMessageDialog((Component) null,
+                "You may view it by going to 'File | View Destiny players'",
+                "Download complete.", JOptionPane.INFORMATION_MESSAGE);
+ 
+            
+        } catch (IOException ex) {
+            Logger.getLogger(CryodexController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog((Component) null,
+                ex.toString(),
+                "Error.", JOptionPane.ERROR_MESSAGE);
+        }
+    */
+    
+    }
+    
     public static void openWebpage(URI uri) throws Exception {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {

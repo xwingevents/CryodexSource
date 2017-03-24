@@ -10,6 +10,7 @@ import cryodex.xml.XMLUtils;
 import cryodex.xml.XMLUtils.Element;
 
 public class CryodexOptions implements XMLObject {
+        private boolean printerFriendly = true;
 	private boolean showTableNumbers = true;
 	private boolean showQuickFind = false;
 	private final List<Modules> nonVisibleModules = new ArrayList<Modules>();
@@ -53,6 +54,14 @@ public class CryodexOptions implements XMLObject {
 	public void setShowQuickFind(boolean showQuickFind) {
 		this.showQuickFind = showQuickFind;
 		updateTournamentVisuals();
+	}
+        
+	public void setPrinterFriendly(boolean printerFriendly) {
+		this.printerFriendly = printerFriendly;
+	}
+        
+	public boolean isPrinterFriendly() {
+		return printerFriendly;
 	}
 
 	public List<Modules> getNonVisibleModules() {

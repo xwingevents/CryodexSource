@@ -16,6 +16,10 @@ import cryodex.CryodexController.Modules;
 import cryodex.export.PlayerExport;
 import cryodex.modules.Module;
 import cryodex.widget.AboutPanel;
+import java.awt.Component;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MenuBar extends JMenuBar {
 
@@ -95,6 +99,28 @@ public class MenuBar extends JMenuBar {
                     PlayerExport.exportPlayersDetail();
                 }
             });
+            
+            JMenuItem downloadPlayers = new JMenuItem("Download Destiny player list");
+            downloadPlayers.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        CryodexController.downloadDestinyPlayers();
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog((Component) null, ex.toString(), "Error.", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+            
+            JMenuItem viewDestinyPlayers = new JMenuItem("View Destiny player list");
+            viewDestinyPlayers.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    PlayerExport.exportDestinyPlayersDetail();
+                }
+            });
 
             JMenuItem exit = new JMenuItem("Exit");
             exit.addActionListener(new ActionListener() {
@@ -109,6 +135,8 @@ public class MenuBar extends JMenuBar {
             fileMenu.add(chooseSaveLocation);
             fileMenu.add(importPlayers);
             fileMenu.add(exportPlayers);
+            fileMenu.add(downloadPlayers);
+            fileMenu.add(viewDestinyPlayers);
             fileMenu.add(exit);
         }
 
@@ -201,6 +229,7 @@ public class MenuBar extends JMenuBar {
                     AboutPanel.showAboutPanel();
                 }
             });
+            
             JMenuItem whereIsSave = new JMenuItem("Where is my save file?");
             whereIsSave.addActionListener(new ActionListener() {
 
@@ -227,6 +256,19 @@ public class MenuBar extends JMenuBar {
                 }
             });
 
+            final JCheckBoxMenuItem printFriendly = new JCheckBoxMenuItem("Printer friendly output?");
+            printFriendly.setState(true);
+            CryodexController.getOptions().setPrinterFriendly(true);
+            
+            printFriendly.addActionListener(new ActionListener() {
+            
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    CryodexController.getOptions().setPrinterFriendly(printFriendly.getState());
+                }
+            });
+            
+            helpMenu.add(printFriendly);
             helpMenu.add(about);
             helpMenu.add(whereIsSave);
         }

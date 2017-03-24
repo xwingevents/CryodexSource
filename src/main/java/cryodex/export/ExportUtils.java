@@ -1,5 +1,6 @@
 package cryodex.export;
 
+import cryodex.CryodexController;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,9 +12,16 @@ public class ExportUtils {
         String preventTableBreak = "table.print-friendly {page-break-inside: avoid;}";
         String mediaCss = "@media print {.pagebreak {page-break-after: always;}}";
         String fancyCss = "table{border-collapse: collapse;}th{color:white; background-color:DarkSlateGray; font-size:120%;} tr:nth-child(odd){    background-color:lightgray;}";
+        String notFancyCss = "table{border-collapse: collapse;}th{color:black; background-color:white; font-size:120%;} tr:nth-child(odd){    background-color:lightgray;}";
         String internationalCharacters = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+        
+        String outputCss;
+        
+        if(CryodexController.getOptions().isPrinterFriendly()) outputCss = notFancyCss;
+        else outputCss = fancyCss;
+        
         String html = "<html><head><style type=\"text/css\">.smallFont{font-size:10px}"
-                + fancyCss + mediaCss + preventTableBreak + "</style>" + internationalCharacters + "</head><body>" + content + "</body></html>";
+                + outputCss + mediaCss + preventTableBreak + "</style>" + internationalCharacters + "</head><body>" + content + "</body></html>";
 
         try {
             File file = File.createTempFile(filename, ".html");

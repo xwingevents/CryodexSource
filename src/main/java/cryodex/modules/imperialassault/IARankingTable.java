@@ -16,8 +16,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import cryodex.CryodexController;
+import cryodex.Icons;
 import cryodex.widget.ComponentUtils;
 import cryodex.widget.TimerPanel;
+import java.net.URL;
+import javax.swing.ImageIcon;
 
 public class IARankingTable extends JPanel {
 
@@ -56,12 +59,20 @@ public class IARankingTable extends JPanel {
 
 	private JLabel getTitleLabel() {
 		if (title == null) {
-			title = new JLabel("Player Rankings");
-			title.setFont(new Font(title.getFont().getName(), title.getFont()
-					.getStyle(), 20));
-		}
-
-		return title;
+                    title = new JLabel("<html>" + tournament.getName() + "<br>Player Rankings</html>");
+                    title.setFont(new Font(title.getFont().getName(), title.getFont()
+                                    .getStyle(), 20));
+                    
+                    URL imgURL = Icons.class.getResource("modules/imperialassault/ia.png");
+                    if (imgURL == null) {
+                        System.out.println("Failed to load IA icon.");
+                    } else {
+                        title.setIcon(new ImageIcon(imgURL));
+                        title.setIconTextGap(5);
+                    }
+                    
+                }
+                return title;
 	}
 
 	public void updateLabel() {

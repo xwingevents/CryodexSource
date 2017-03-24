@@ -33,6 +33,7 @@ public class RegisterPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final String filterHint = "Filter Player List";
 
+    private JButton verifyButton;
     private JButton saveButton;
     private JButton deleteButton;
     private JButton cancelButton;
@@ -118,7 +119,11 @@ public class RegisterPanel extends JPanel {
             playerInfoPanel.add(getGroupNameField(), gbc);
 
             gbc.gridy++;
-            playerInfoPanel.add(new JLabel("Email Address"), gbc);
+            //playerInfoPanel.add(new JLabel("Email Address"), gbc);
+            playerInfoPanel.add(ComponentUtils.addToHorizontalBorderLayout(new JLabel("Email Address"), null, getVerifyButton()), gbc);
+            
+            //gbc.gridy++;
+            //playerInfoPanel.add(getVerifyButton(), gbc);
 
             gbc.gridy++;
             playerInfoPanel.add(getEmailField(), gbc);
@@ -159,6 +164,25 @@ public class RegisterPanel extends JPanel {
         return emailField;
     }
 
+    private JButton getVerifyButton() {
+
+        if (verifyButton == null) {
+
+            verifyButton = new JButton("Verify");
+
+            verifyButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    
+                }
+                
+            });                    
+        }
+    
+        return verifyButton;
+    }
+    
     private JButton getSaveButton() {
 
         if (saveButton == null) {
